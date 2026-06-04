@@ -15,29 +15,25 @@ let obstacles = [];
 let spawnTimer = 0;
 let currentLevel = 1;
 
-// El Escudo (Círculo protector con físicas)
-const shield = {
-    x: 200,
-    y: 380,
-    ox: 200,
-    oy: 380,
-    vx: 0,
-    vy: 0,
-    radius: 15,
-    color: '#ffffff',
-    targetX: 200,
-    targetY: 380,
-    speedFactor: 0.35, // Un poco más responsivo para mover estructuras pesadas
-    mass: 18
-};
-
-// El Globo (Vulnerable abajo)
+// El Globo (Mantiene su tamaño original de 23px de radio)
 const balloon = {
     x: 200,
     y: 510,
     radius: 23,
     color: '#ff4757',
     stringLength: 35
+};
+
+// El Escudo (Tú lo controlas)
+const shield = {
+    x: 200, y: 380,
+    ox: 200, oy: 380,
+    vx: 0, vy: 0,
+    radius: 15,
+    color: '#ffffff',
+    targetX: 200, targetY: 380,
+    speedFactor: 0.35,
+    mass: 25 // Se aumentó la masa para poder mover los bloques masivos del 400%
 };
 
 // --- Mensajes y Recompensas por Metas ---
@@ -48,7 +44,7 @@ const milestones = {
     5000: { msg: "¡DIOS MÍO! ¡Membresía para el Free asegurada! 💎🏆", triggered: false }
 };
 
-// --- Controles de mouse y touch ---
+// --- Controles ---
 canvas.addEventListener('mousemove', (e) => {
     const rect = canvas.getBoundingClientRect();
     shield.targetX = e.clientX - rect.left;
@@ -80,9 +76,10 @@ function resetGame() {
     balloon.x = 200; balloon.y = 510;
 }
 
-// Generador de objetos con masa proporcional al tamaño (Físicas realistas)
+// Generador de objetos con masa proporcional estricta al volumen/área
 function createObstacle(x, y, radius, vx, vy, color, type = 'circle') {
-    const mass = (radius * radius) * 0.06; // Los grandes se sienten pesadísimos
+    // La masa escala al cuadrado. Un objeto 400% más grande es 16 veces más pesado.
+    const mass = (radius * radius) * 0.05; 
     return {
         x: x, y: y,
         radius: radius,
@@ -93,132 +90,142 @@ function createObstacle(x, y, radius, vx, vy, color, type = 'circle') {
     };
 }
 
-// --- Diseñador Táctico de Niveles ---
+// --- Administrador de Niveles y Variación Extrema de Tamaño ---
 function updateLevelsAndSpawning() {
     spawnTimer++;
 
-    // Progresión de niveles por puntaje
-    if (score < 300) {
-        currentLevel = 1;
-    } else if (score >= 300 && score < 700) {
-        currentLevel = 2;
-    } else if (score >= 700 && score < 1500) {
-        currentLevel = 3;
-    } else {
-        currentLevel = 4;
+    if (score < 300) currentLevel = 1;
+    else if (score >= 300 && score < 700) currentLevel = 2;
+    else if (score >= 700 && score < 1500) currentLevel = 3;
+    else currentLevel = 4;
+
+    let levelSpeed = 1.3 + (currentLevel * 0.3);
+
+    // Función para obtener un radio aleatorio (Máximo 400% del globo -> 23 * 4 = 92px de radio)
+    function getRandomRadius() {
+        let dice = Math.random();
+        if (dice > 0.92) return Math.random() * 22 + 70; // Gigantesco (300% - 400%)
+        if (dice > 0.75) return Math.random() * 25 + 45; // Mediano-Grande (200%)
+        return Math.random() * 12 + 10;                  // Normal / Pequeño (50% - 100%)
     }
 
-    let levelSpeed = 1.4 + (currentLevel * 0.3);
-
-    // NIVEL 1: Caída libre tradicional
-    if (currentLevel === 1 && spawnTimer % 30 === 0) {
-        let r = Math.random() * 14 + 10;
+    // NIVEL 1: Lluvia Tradicional con tamaños muy locos e impredecibles
+    if (currentLevel === 1 && spawnTimer % 35 === 0) {
+        let r = getRandomRadius();
         let x = Math.random() * (canvas.width - r * 2) + r;
         obstacles.push(createObstacle(x, -r, r, 0, levelSpeed, '#34d399'));
     }
     
-    // NIVEL 2: El Conjunto/Bloque de Bloques (Empujar para abrir camino)
-    else if (currentLevel === 2) {
-        // Genera una estructura masiva compacta tipo cuadrícula cada 180 fotogramas
-        if (spawnTimer % 180 === 0) {
-            let rows = 4;
-            let cols = 8;
-            let startY = -140;
-            let size = 15; // Tamaño del bloque
-            
-            for (let r = 0; r < rows; r++) {
-                for (let c = 0; c < cols; c++) {
-                    // Dejamos pequeños bloques compactos juntos sin espacios
-                    let blockX = c * 34 + 40;
-                    let blockY = startY + (r * 30);
-                    
-                    // Un color rojizo/sólido para denotar peligro de bloque
-                    obstacles.push(createObstacle(blockX, blockY, size, 0, levelSpeed * 0.8, '#f43f5e', 'cube'));
-                }
+    // NIVEL 2: Estructura de Bloques Pesados (Pared densa)
+    else if (currentLevel === 2 && spawnTimer % 180 === 0) {
+        let rows = 3;
+        let cols = 6;
+        let startY = -120;
+        let size = 18; // Cada bloque individual
+        
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                let blockX = c * 42 + 50;
+                let blockY = startY + (r * 32);
+                obstacles.push(createObstacle(blockX, blockY, size, 0, levelSpeed * 0.8, '#f43f5e', 'cube'));
             }
         }
     }
     
-    // NIVEL 3: La Culebrita/Serpiente de costado en línea recta continua
-    else if (currentLevel === 3) {
-        // Crea un flujo continuo simulando una serpiente que avanza desde un lateral
-        if (spawnTimer % 12 === 0) {
-            let r = 13;
-            // Usamos una función seno basada en el tiempo para que salgan en una línea ondulada perfecta
-            let oX = canvas.width / 2 + Math.sin(Date.now() * 0.004) * 130;
-            obstacles.push(createObstacle(oX, -r, r, 0, levelSpeed * 1.1, '#a78bfa'));
-        }
+    // NIVEL 3: La Serpiente continua ondulante
+    else if (currentLevel === 3 && spawnTimer % 10 === 0) {
+        let r = 12;
+        let oX = canvas.width / 2 + Math.sin(Date.now() * 0.005) * 125;
+        obstacles.push(createObstacle(oX, -r, r, 0, levelSpeed * 1.1, '#a78bfa'));
     }
     
-    // NIVEL 4: Laberinto avanzado y formaciones en Cruz (X)
+    // NIVEL 4: Tormenta Total de Meteoros Gigantesco (Hasta 400%) y Patrones en X
     else if (currentLevel === 4) {
-        if (spawnTimer % 140 === 0) {
-            let pattern = Math.random() > 0.5 ? 'X' : 'barrera-movil';
+        if (spawnTimer % 130 === 0) {
+            let pattern = Math.random() > 0.4 ? 'X' : 'mega-bloque';
             
             if (pattern === 'X') {
-                for (let i = 0; i < 7; i++) {
-                    obstacles.push(createObstacle(i * 45 + 25, -i * 25, 12, 0, levelSpeed, '#fbbf24'));
-                    obstacles.push(createObstacle(canvas.width - (i * 45 + 25), -i * 25, 12, 0, levelSpeed, '#fbbf24'));
+                for (let i = 0; i < 6; i++) {
+                    obstacles.push(createObstacle(i * 50 + 30, -i * 25, 12, 0, levelSpeed, '#fbbf24'));
+                    obstacles.push(createObstacle(canvas.width - (i * 50 + 30), -i * 25, 12, 0, levelSpeed, '#fbbf24'));
                 }
             } else {
-                // Grandes tablas horizontales cruzadas que entran con velocidad inclinada
-                obstacles.push(createObstacle(50, -30, 25, 1.5, levelSpeed, '#38bdf8'));
-                obstacles.push(createObstacle(canvas.width - 50, -90, 25, -1.5, levelSpeed, '#38bdf8'));
+                // Spawnea un obstáculo colosal del 400% del tamaño del globo
+                let megaRadius = 90; // Casi tapa media pantalla
+                obstacles.push(createObstacle(canvas.width / 2, -megaRadius, megaRadius, 0, levelSpeed * 0.6, '#38bdf8'));
             }
         }
     }
 }
 
-// --- Físicas Elásticas de Impacto por Masa ---
-function resolvePhysicsCollision(c1, c2) {
-    let dx = c2.x - c1.x;
-    let dy = c2.y - c1.y;
+// --- Físicas Avanzadas de Colisión Elástica Completa ---
+function resolvePhysicsCollision(obj1, obj2) {
+    let dx = obj2.x - obj1.x;
+    let dy = obj2.y - obj1.y;
     let distance = Math.sqrt(dx * dx + dy * dy);
+    let minDist = obj1.radius + obj2.radius;
 
-    if (distance < (c1.radius + c2.radius)) {
-        // Empuje de separación para que no se traspasen
-        let overlap = (c1.radius + c2.radius) - distance;
+    if (distance < minDist) {
+        // 1. Separación física inmediata para evitar solapamientos u objetos atorados
+        let overlap = minDist - distance;
         let nx = dx / distance;
         let ny = dy / distance;
         
-        c2.x += nx * overlap;
-        c2.y += ny * overlap;
+        // Distribuir el empuje de separación basándose en las masas de cada uno
+        let totalMass = obj1.mass + obj2.mass;
+        
+        // Si el objeto 1 NO es el escudo del jugador (que es inamovible por ratón), ambos se repelen
+        if (obj1 !== shield) {
+            let ratio1 = obj2.mass / totalMass;
+            obj1.x -= nx * overlap * ratio1;
+            obj1.y -= ny * overlap * ratio1;
+        }
+        
+        let ratio2 = obj1.mass / totalMass;
+        obj2.x += nx * overlap * ratio2;
+        obj2.y += ny * overlap * ratio2;
 
-        // Ecuaciones de choque elástico real
-        let kx = c1.vx - c2.vx;
-        let ky = c1.vy - c2.vy;
-        let p = 2 * (nx * kx + ny * ky) / (c1.mass + c2.mass);
+        // 2. Transferencia Vectorial de Impulso Elástico Real
+        let kx = obj1.vx - obj2.vx;
+        let ky = obj1.vy - obj2.vy;
+        let vn = kx * nx + ky * ny; // Velocidad relativa normal
 
-        // Se actualizan los vectores de velocidad del obstáculo impactado
-        c2.vx += p * c1.mass * nx * 1.5;
-        c2.vy += p * c1.mass * ny * 1.5;
+        // Si se están moviendo en direcciones opuestas de separación, no recalcular
+        if (vn < 0) return;
+
+        let impulse = (2 * vn) / totalMass;
+
+        // Aplicar el rebote físico real a ambas velocidades corporales
+        if (obj1 !== shield) {
+            obj1.vx -= impulse * obj2.mass * nx;
+            obj1.vy -= impulse * obj2.mass * ny;
+        }
+        obj2.vx += impulse * obj1.mass * nx;
+        obj2.vy += impulse * obj1.mass * ny;
     }
 }
 
 function update() {
     if (!gameActive) return;
 
-    // Calcular velocidad física del escudo en este fotograma
+    // Calcular la inercia/fuerza del escudo
     shield.vx = (shield.x - shield.ox);
     shield.vy = (shield.y - shield.oy);
-    
     shield.ox = shield.x;
     shield.oy = shield.y;
 
-    // Acercar el escudo suavemente a la posición del cursor/dedo
+    // Mover el escudo hacia el cursor
     shield.x += (shield.targetX - shield.x) * shield.speedFactor;
     shield.y += (shield.targetY - shield.y) * shield.speedFactor;
 
     shield.x = Math.max(shield.radius, Math.min(canvas.width - shield.radius, shield.x));
     shield.y = Math.max(shield.radius, Math.min(canvas.height - shield.radius, shield.y));
 
-    // Ejecutar lógica de spawn según nivel
     updateLevelsAndSpawning();
 
-    // Contador de puntos estable por tiempo sostenido
+    // Puntuación por tiempo de supervivencia
     if (Date.now() % 12 === 0) {
         score++;
-        
         if (milestones[score] && !milestones[score].triggered) {
             milestones[score].triggered = true;
             scoreTxt.innerHTML = `<span style="color: #fbbf24; font-size: 17px; font-weight:bold;">${milestones[score].msg}</span>`;
@@ -228,20 +235,38 @@ function update() {
         }
     }
 
-    // Actualizar todos los bloques y esferas
-    for (let i = obstacles.length - 1; i >= 0; i--) {
-        let obs = obstacles[i];
-        
+    // --- BUCLE DE FÍSICAS E INTERACCIONES ---
+    // Mover todos los obstáculos individuales
+    obstacles.forEach(obs => {
         obs.x += obs.vx;
         obs.y += obs.vy;
+        
+        // Fricción de arrastre sutil para frenar rebotes infinitos en las paredes laterales
+        obs.vx *= 0.98;
+        
+        // Hacer que reboten contra las paredes laterales de la pantalla
+        if (obs.x - obs.radius < 0) {
+            obs.x = obs.radius;
+            obs.vx *= -0.8;
+        } else if (obs.x + obs.radius > canvas.width) {
+            obs.x = canvas.width - obs.radius;
+            obs.vx *= -0.8;
+        }
+    });
 
-        // Amortiguación del deslizamiento lateral
-        obs.vx *= 0.97;
+    // DETECCIÓN CADENA: Chocar obstáculos CONTRA OTROS obstáculos
+    for (let i = 0; i < obstacles.length; i++) {
+        for (let j = i + 1; j < obstacles.length; j++) {
+            resolvePhysicsCollision(obstacles[i], obstacles[j]);
+        }
+    }
 
-        // Resolver choque con el círculo del jugador
+    // DETECCIÓN: Chocar obstáculos contra el ESCUDO del jugador
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+        let obs = obstacles[i];
         resolvePhysicsCollision(shield, obs);
 
-        // Verificar choque mortal contra el globo
+        // DETECCIÓN: Choque mortal contra el GLOBO
         let bDx = obs.x - balloon.x;
         let bDy = obs.y - balloon.y;
         let bDist = Math.sqrt(bDx * bDx + bDy * bDy);
@@ -251,8 +276,8 @@ function update() {
             return;
         }
 
-        // Eliminar del array si ya pasó el límite inferior
-        if (obs.y > canvas.height + 60) {
+        // Eliminar del mapa si el obstáculo cae al fondo por completo
+        if (obs.y - obs.radius > canvas.height + 40) {
             obstacles.splice(i, 1);
         }
     }
@@ -261,7 +286,7 @@ function update() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Hilo
+    // Hilo fino
     ctx.beginPath();
     ctx.moveTo(balloon.x, balloon.y + balloon.radius);
     ctx.lineTo(balloon.x, balloon.y + balloon.radius + balloon.stringLength);
@@ -269,7 +294,7 @@ function draw() {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Globo
+    // Dibujar Globo Romántico
     ctx.beginPath();
     ctx.arc(balloon.x, balloon.y, balloon.radius, 0, Math.PI * 2);
     ctx.fillStyle = balloon.color;
@@ -278,13 +303,13 @@ function draw() {
     ctx.fill();
     ctx.shadowBlur = 0;
 
-    // Escudo
+    // Dibujar Escudo Protector
     ctx.beginPath();
     ctx.arc(shield.x, shield.y, shield.radius, 0, Math.PI * 2);
     ctx.fillStyle = shield.color;
     ctx.fill();
 
-    // Dibujar las geometrías de los obstáculos
+    // Dibujar Obstáculos Geométricos
     obstacles.forEach(obs => {
         ctx.fillStyle = obs.color;
         ctx.beginPath();
