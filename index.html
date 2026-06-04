@@ -1,161 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Animales para Niños</title>
-
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protege el Globo</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <h1>🐾 SONIDOS DE ANIMALES 🐾</h1>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="400" height="600"></canvas>
 
-  <div class="contenedor">
+        <div id="ui-layer">
+            <div id="score-board">Puntuación: <span id="score">0</span></div>
+        </div>
 
-    <div class="animal" onclick="sonido('abeja')">
-      <img src="imagenes/abeja.png">
-      <p>ABEJA</p>
+        <div id="screen-overlay">
+            <h1 id="overlay-title">Rise Up Clón</h1>
+            <p id="overlay-desc">Mueve el escudo con tu mouse o dedo para apartar los obstáculos y proteger al globo.</p>
+            <button id="start-btn">Jugar</button>
+        </div>
     </div>
 
-    <div class="animal" onclick="sonido('aguila')">
-      <img src="imagenes/aguila.png">
-      <p>AGUILA</p>
-    </div>
-
-    <div class="animal" onclick="sonido('ballena')">
-      <img src="imagenes/ballena.png">
-      <p>BALLENA</p>
-    </div>
-
-    <div class="animal" onclick="sonido('burro')">
-      <img src="imagenes/burro.png">
-      <p>BURRO</p>
-    </div>
-
-    <div class="animal" onclick="sonido('caballo')">
-      <img src="imagenes/caballo.png">
-      <p>CABALLO</p>
-    </div>
-
-    <div class="animal" onclick="sonido('cabra')">
-      <img src="imagenes/cabra.png">
-      <p>CABRA</p>
-    </div>
-
-    <div class="animal" onclick="sonido('cerdo')">
-      <img src="imagenes/cerdo.png">
-      <p>CERDO</p>
-    </div>
-
-    <div class="animal" onclick="sonido('cocodrilo')">
-      <img src="imagenes/COCODRILLO.png">
-      <p>COCODRILO</p>
-    </div>
-
-    <div class="animal" onclick="sonido('conejo')">
-      <img src="imagenes/conejo.png">
-      <p>CONEJO</p>
-    </div>
-
-    <div class="animal" onclick="sonido('delfin')">
-      <img src="imagenes/delfin.png">
-      <p>DELFIN</p>
-    </div>
-
-    <div class="animal" onclick="sonido('dinosaurio')">
-      <img src="imagenes/dinosaurio.png">
-      <p>DINOSAURIO</p>
-    </div>
-
-    <div class="animal" onclick="sonido('elefante')">
-      <img src="imagenes/elefante.png">
-      <p>ELEFANTE</p>
-    </div>
-
-    <div class="animal" onclick="sonido('gallina')">
-      <img src="imagenes/gallina.png">
-      <p>GALLINA</p>
-    </div>
-
-    <div class="animal" onclick="sonido('gallo')">
-      <img src="imagenes/gallo.png">
-      <p>GALLO</p>
-    </div>
-
-    <div class="animal" onclick="sonido('gato')">
-      <img src="imagenes/gato.png">
-      <p>GATO</p>
-    </div>
-
-    <div class="animal" onclick="sonido('hipopotamo')">
-      <img src="imagenes/hipopotamo.png">
-      <p>HIPOPOTAMO</p>
-    </div>
-
-    <div class="animal" onclick="sonido('jirafa')">
-      <img src="imagenes/jirafa.png">
-      <p>JIRAFA</p>
-    </div>
-
-    <div class="animal" onclick="sonido('leon')">
-      <img src="imagenes/leon.png">
-      <p>LEON</p>
-    </div>
-
-    <div class="animal" onclick="sonido('mono')">
-      <img src="imagenes/mono.png">
-      <p>MONO</p>
-    </div>
-
-    <div class="animal" onclick="sonido('oso')">
-      <img src="imagenes/oso.png">
-      <p>OSO</p>
-    </div>
-
-    <div class="animal" onclick="sonido('oveja')">
-      <img src="imagenes/oveja.png">
-      <p>OVEJA</p>
-    </div>
-
-    <div class="animal" onclick="sonido('panda')">
-      <img src="imagenes/panda.png">
-      <p>PANDA</p>
-    </div>
-
-    <div class="animal" onclick="sonido('pato')">
-      <img src="imagenes/pato.png">
-      <p>PATO</p>
-    </div>
-
-    <div class="animal" onclick="sonido('perro')">
-      <img src="imagenes/perro.png">
-      <p>PERRO</p>
-    </div>
-
-    <div class="animal" onclick="sonido('rana')">
-      <img src="imagenes/rana.png">
-      <p>RANA</p>
-    </div>
-
-    <div class="animal" onclick="sonido('serpiente')">
-      <img src="imagenes/serpiente.png">
-      <p>SERPIENTE</p>
-    </div>
-
-    <div class="animal" onclick="sonido('tigre')">
-      <img src="imagenes/tigre.png">
-      <p>TIGRE</p>
-    </div>
-
-    <div class="animal" onclick="sonido('vaca')">
-      <img src="imagenes/vaca.png">
-      <p>VACA</p>
-    </div>
-
-  </div>
-
-  <script src="script.js"></script>
-
+    <script src="script.js"></script>
 </body>
 </html>
