@@ -2,29 +2,119 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salva nuestro amor mi ojitos de uva 🍇❤️</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>❤️ Salva Nuestro Amor ❤️</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div id="game-container">
-        <canvas id="gameCanvas" width="400" height="600"></canvas>
 
+        <!-- Canvas -->
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- Interfaz -->
         <div id="ui-layer">
-            <div id="progress-container">
-                <div id="progress-bar"></div>
+
+            <div id="top-ui">
+
+                <div id="progress-container">
+                    <div id="progress-bar"></div>
+                </div>
+
+                <div id="score-board">
+                    ❤️ Nivel <span id="level">1</span>
+                    <br>
+                    Puntos: <span id="score">0</span>
+                </div>
+
             </div>
-            <div id="score-board">Nivel 1 | Puntos: <span id="score">0</span></div>
+
         </div>
 
+        <!-- Pantalla Inicio -->
         <div id="screen-overlay">
-            <h1 id="overlay-title">Salva nuestro amor mi ojitos de uva 🍇❤️</h1>
-            <p id="overlay-desc">Mueve el escudo con tu mouse o dedo para apartar los obstáculos y proteger al globo.</p>
-            <button id="start-btn">Jugar</button>
+
+            <div class="card">
+
+                <h1>
+                    ❤️ Mi Ojitos de Uva 🍇❤️
+                </h1>
+
+                <p id="overlay-desc">
+                    Protege nuestro corazón de todos los obstáculos.
+                    Muévelo con tu dedo y ayúdalo a llegar hasta el final.
+                </p>
+
+                <button id="start-btn">
+                    💕 Comenzar
+                </button>
+
+            </div>
+
         </div>
+
+        <!-- Pantalla Final -->
+        <div id="victory-overlay" class="hidden">
+
+            <div class="card final-card">
+
+                <h1>
+                    🎉 Lo Lograste Mi Amor 🎉
+                </h1>
+
+                <div id="love-letter">
+
+                    <p>
+                        Mi ojitos de uva 🍇❤️
+                    </p>
+
+                    <p>
+                        Este pequeño juego representa algo muy importante para mí.
+                    </p>
+
+                    <p>
+                        Así como protegiste este corazón de cada obstáculo,
+                        también quiero cuidar nuestro amor todos los días.
+                    </p>
+
+                    <p>
+                        Gracias por cada sonrisa, cada momento bonito,
+                        cada palabra de apoyo y cada recuerdo que hemos creado juntos.
+                    </p>
+
+                    <p>
+                        No importa cuántos obstáculos aparezcan,
+                        siempre elegiré luchar por nosotros.
+                    </p>
+
+                    <p>
+                        Eres una persona muy especial para mí y me haces muy feliz.
+                    </p>
+
+                    <p>
+                        Te amo muchísimo mi ojitos de uva ❤️
+                    </p>
+
+                    <p class="firma">
+                        Con todo mi amor 💖
+                    </p>
+
+                </div>
+
+                <button id="restart-btn">
+                    ❤️ Volver a jugar
+                </button>
+
+            </div>
+
+        </div>
+
     </div>
 
     <script src="script.js"></script>
+
 </body>
 </html>
