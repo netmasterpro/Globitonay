@@ -1,127 +1,255 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-body {
-    background-color: #1a1a1a;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    overflow: hidden;
-    color: #fff;
+html,
+body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:'Segoe UI',sans-serif;
 }
 
-#game-container {
-    position: relative;
-    width: 400px;
-    height: 600px;
-    background: linear-gradient(to bottom, #0f172a, #1e293b);
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    overflow: hidden;
+/* Fondo romántico */
+body{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:
+    radial-gradient(circle at top,#ffd6e8 0%,#ffb7d5 35%,#ff9ec8 70%,#ff8ebf 100%);
 }
 
-canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
+/* Contenedor */
+#game-container{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
 }
 
-#ui-layer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 20px;
+/* Canvas */
+canvas{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    display:block;
 }
 
-#score-board {
-    font-size: 24px;
-    font-weight: bold;
-    text-align: center;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+/* UI */
+#ui-layer{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:20;
 }
 
-#screen-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(15, 23, 42, 0.85);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 10;
-    transition: opacity 0.3s ease;
+#top-ui{
+    padding:16px;
 }
 
-.hidden {
-    display: none !important;
+#score-board{
+    margin-top:10px;
+    text-align:center;
+    color:white;
+    font-weight:700;
+    font-size:20px;
+
+    text-shadow:
+    0 0 10px rgba(255,255,255,.8),
+    0 0 20px rgba(255,255,255,.4);
 }
 
-h1 {
-    font-size: 32px;
-    margin-bottom: 10px;
-    text-align: center;
-    color: #38bdf8;
+/* Barra progreso */
+#progress-container{
+    width:100%;
+    height:14px;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    background:
+    rgba(255,255,255,.25);
+
+    backdrop-filter:blur(8px);
+
+    border:
+    1px solid rgba(255,255,255,.3);
 }
 
-p {
-    margin-bottom: 25px;
-    color: #94a3b8;
-    text-align: center;
-    max-width: 80%;
-    font-size: 14px;
+#progress-bar{
+    width:0%;
+    height:100%;
+
+    border-radius:20px;
+
+    background:
+    linear-gradient(
+        90deg,
+        #ff4d88,
+        #ff73a9,
+        #ff9dc6
+    );
+
+    box-shadow:
+    0 0 10px #ff4d88,
+    0 0 20px #ff73a9;
 }
 
-button {
-    background: #38bdf8;
-    color: #0f172a;
-    border: none;
-    padding: 12px 30px;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 25px;
-    cursor: pointer;
-    box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4);
-    transition: transform 0.2s, background 0.2s;
-    pointer-events: auto;
+/* Overlay */
+#screen-overlay,
+#victory-overlay{
+    position:absolute;
+    inset:0;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    padding:20px;
+
+    background:
+    rgba(255,105,180,.25);
+
+    backdrop-filter:blur(10px);
+
+    z-index:50;
 }
 
-button:hover {
-    background: #0ea5e9;
-    transform: scale(1.05);
+/* Tarjetas */
+.card{
+    width:min(90%,500px);
+
+    background:
+    rgba(255,255,255,.18);
+
+    border:
+    1px solid rgba(255,255,255,.3);
+
+    border-radius:28px;
+
+    padding:30px;
+
+    text-align:center;
+
+    backdrop-filter:blur(16px);
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.18);
 }
 
-button:active {
-    transform: scale(0.95);
+.final-card{
+    max-height:85vh;
+    overflow:auto;
 }
 
-#progress-container {
-    width: 100%;
-    height: 12px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    margin-bottom: 8px;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+/* Títulos */
+h1{
+    color:white;
+
+    font-size:32px;
+
+    margin-bottom:18px;
+
+    text-shadow:
+    0 0 15px rgba(255,255,255,.8);
 }
 
-#progress-bar {
-    width: 0%;
-    height: 100%;
-    background: linear-gradient(90deg, #38bdf8, #a78bfa);
-    box-shadow: 0 0 8px #38bdf8;
-    transition: width 0.1s linear;
+/* Textos */
+#overlay-desc,
+#love-letter p{
+    color:white;
+
+    line-height:1.7;
+
+    margin-bottom:12px;
+
+    font-size:16px;
+}
+
+/* Firma */
+.firma{
+    font-weight:bold;
+    font-size:20px;
+    margin-top:20px;
+}
+
+/* Botones */
+button{
+    border:none;
+
+    padding:15px 28px;
+
+    border-radius:999px;
+
+    font-size:18px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    color:white;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ff4d88,
+        #ff73a9
+    );
+
+    box-shadow:
+    0 10px 25px rgba(255,77,136,.45);
+
+    transition:.25s;
+}
+
+button:hover{
+    transform:translateY(-2px) scale(1.03);
+}
+
+button:active{
+    transform:scale(.97);
+}
+
+/* Oculto */
+.hidden{
+    display:none !important;
+}
+
+/* Scroll bonito */
+::-webkit-scrollbar{
+    width:8px;
+}
+
+::-webkit-scrollbar-track{
+    background:transparent;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#ff73a9;
+    border-radius:20px;
+}
+
+/* Móviles */
+@media(max-width:480px){
+
+    h1{
+        font-size:26px;
+    }
+
+    #score-board{
+        font-size:18px;
+    }
+
+    #overlay-desc,
+    #love-letter p{
+        font-size:15px;
+    }
+
+    button{
+        width:100%;
+    }
 }
